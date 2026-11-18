@@ -52,3 +52,28 @@ git push -u origin main
 ## 发布安装包
 
 仓库里不包含 `.fpk`（已在 .gitignore 中排除）。上架前建议在 Releases 里附上 `安装包/飞牛歌词同步-0.4.0.fpk`。
+
+
+---
+
+## 附：本机网络修复记录（2026-11-18）
+
+现象：浏览器能打开 github.com，但程序调 API 全部超时。
+
+原因：`C:\Windows\System32\drivers\etc\hosts` 内有错误记录：
+
+```
+8.8.4.4     api.github.com        ← 假 IP
+8.8.4.4     codeload.github.com   ← 假 IP
+140.82.121.3 github.com           ← 该 IP 已不通
+```
+
+修复为实测可用的 IP（用 `curl --resolve` 逐个验证）：
+
+```
+20.205.243.168  api.github.com
+20.6.7.16       codeload.github.com
+20.205.243.166  github.com
+```
+
+备份：`备份/hosts.bak-*.txt`。GitHub 的 IP 会变，失效时重新用 DoH 查询后替换。

@@ -55,3 +55,14 @@ fnos  feiniu  nas  lyrics  lrc  music  nodejs  self-hosted  chinese
 1. 仓库里不含 `.fpk`（已在 .gitignore 排除），安装包只挂在 Release
 2. 首次安装会拉依赖应用 `nodejs_v22`，离线设备需自行安装
 3. 建议在仓库 About 里勾选 Issues 模板（可后续补）
+
+
+---
+
+## 已发布（2026-11-18）
+
+- 仓库：https://github.com/ge-nas/Feiniu-Lyrics-sync
+- Release：https://github.com/ge-nas/Feiniu-Lyrics-sync/releases/tag/v0.4.0
+- 附件：`feiniu-lyrics-sync-0.4.0.fpk`（4070 KB）
+- Topics：chinese, feiniu, fnos, lrc, lyrics, music, nas, nodejs, self-hosted
+- 备注：GitHub 会剥离附件名里的中文，故附件用 ASCII 名；发布标题保持中文。
