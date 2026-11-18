@@ -4,6 +4,8 @@
 
 扫描你的音乐目录，找出没有歌词的歌曲，从多个公开歌词源匹配带时间轴的 LRC，写到歌曲旁边或写进音频标签里。
 
+**国内镜像**：[Gitee · 飞牛歌词同步](https://gitee.com/ge-china/feiniu-lyrics-sync)（GitHub 访问慢时用这个）
+
 <p>
   <img alt="fnOS" src="https://img.shields.io/badge/fnOS-1.1%2B-4C8DFF">
   <img alt="Node" src="https://img.shields.io/badge/Node.js-22-339933">
