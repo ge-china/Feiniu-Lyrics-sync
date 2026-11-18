@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>飞牛歌词同步</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header>
+  <div class="brand">飞牛歌词同步</div>
+  <div class="badges" id="badges"></div>
+</header>
+
+<main>
+  <section class="card">
+    <div class="row">
+      <input id="root" class="grow" placeholder="音乐目录，例如 /vol1/1000/Music/音乐">
+      <button id="btnScan" class="primary">扫描曲库</button>
+      <button id="btnFill">自动补全（缺歌词）</button>
+      <button id="btnAuth" class="ghost">授权目录</button>
+      <button id="btnStop" class="ghost">停止</button>
+    </div>
+    <div class="progress" id="progress"><div class="bar" id="bar"></div><span id="ptext">空闲</span></div>
+  </section>
+
+  <nav class="tabs">
+    <button data-tab="library" class="active">曲库</button>
+    <button data-tab="search">手动搜索</button>
+    <button data-tab="pending" id="tabBtnPending">待确认</button>
+    <button data-tab="settings">设置</button>
+    <button data-tab="sources">自定义源</button>
+    <button data-tab="logs">日志</button>
+  </nav>
+
+  <section id="tab-library" class="tab active">
+    <div id="permWarn" class="warnbox" style="display:none"></div>
+    <div class="row">
+      <select id="filter">
+        <option value="all">全部</option>
+        <option value="missing">缺歌词</option>
+        <option value="done">已有歌词</option>
+        <option value="nomatch">未匹配到</option>
+      </select>
+      <input id="q" class="grow" placeholder="搜索歌名/歌手">
+      <button id="btnQuery" class="ghost">查询</button>
+    </div>
+    <div class="row">
+      <button id="btnDelSel" class="danger">删除所选歌词</button>
+      <select id="delMode">
+        <option value="">跟随写入方式</option>
+        <option value="lrc">仅删 .lrc 文件</option>
+        <option value="embed">仅清内嵌标签</option>
+        <option value="both">两者都删</option>
+      </select>
+      <span class="muted" id="selInfo">未选择</span>
+    </div>
+    <table class="tbl">
+      <thead><tr><th><input type="checkbox" id="chkAll"></th><th>歌名</th><th>歌手</th><th>专辑</th><th>时长</th><th>状态</th><th>来源</th><th>操作</th></tr></thead>
+      <tbody id="tbody"></tbody>
+    </table>
+    <div class="muted" id="libInfo"></div>
+  </section>
+
+  <section id="tab-search" class="tab">
+    <div class="row">
+      <input id="sTitle" class="grow" placeholder="歌名">
+      <input id="sArtist" class="grow" placeholder="歌手">
+      <button id="btnSearch" class="primary">搜索歌词</button>
+    </div>
+    <div id="searchResults"></div>
+  </section>
+
+  <section id="tab-pending" class="tab">
+    <p class="muted">这些歌找到了多个可能版本，或分数不够确定。挑一个写入，选择会被记住，下次遇到同一首歌自动用这个版本。</p>
+    <div class="row">
+      <button id="btnAutoAll" class="primary">全部按最高分处理</button>
+      <span class="muted" id="pendingInfo"></span>
+    </div>
+    <div id="pendingList"></div>
+  </section>
+
+  <section id="tab-settings" class="tab">
+    <div class="grid">
+      <label>下载模式
+        <select id="downloadMode">
+          <option value="auto">全自动（分数最高直接写）</option>
+          <option value="ask">多版本时询问（推荐）</option>
+          <option value="manual">全部人工确认</option>
+        </select>
+      </label>
+      <label>写入方式
+        <select id="writeMode">
+          <option value="lrc">独立 .lrc 文件</option>
+          <option value="embed">写入音频内嵌标签</option>
+          <option value="both">两者都写</option>
+        </select>
+      </label>
+      <label>最低匹配分 <input id="minScore" type="number" min="0" max="150"></label>
+      <label>并发数 <input id="concurrency" type="number" min="1" max="6"></label>
+      <label>请求间隔(ms) <input id="delay" type="number" min="0" max="5000"></label>
+      <label>取歌词候选数 <input id="fetchTop" type="number" min="1" max="8"></label>
+      <label class="check"><input id="skipInstr" type="checkbox"> 跳过伴奏/纯音乐</label>
+      <label class="check"><input id="keepExisting" type="checkbox"> 保留已有歌词不覆盖</label>
+      <label class="check"><input id="backupBeforeEmbed" type="checkbox"> 改内嵌标签前先备份音频（写/删都生效）</label>
+      <label class="check"><input id="autoEnabled" type="checkbox"> 启用定时自动任务</label>
+      <label>自动间隔(分钟) <input id="autoInterval" type="number" min="5"></label>
+    </div>
+    <h3>歌词源</h3>
+    <div class="row"><button id="btnTestSrc" class="ghost">测试源连通性</button><span class="muted" id="srcTestMsg">用「晴天 / 周杰伦」做探测</span></div>
+    <div id="sourceBox" class="sources"></div>
+    <div class="row"><button id="btnSave" class="primary">保存设置</button><span class="muted" id="saveMsg"></span></div>
+    <h3>运行信息</h3>
+    <pre id="diag" class="code"></pre>
+  </section>
+
+  <section id="tab-sources" class="tab">
+    <p class="muted">把 .js 文件放进下面的目录即可新增一个源；文件名就是源 id。保存后在「设置 → 歌词源」里启用。</p>
+    <div class="row"><input id="srcDir" class="grow" readonly><button id="btnTpl" class="ghost">查看模板</button><button id="btnReloadSrc" class="ghost">刷新源列表</button></div>
+    <pre id="tplBox" class="code"></pre>
+  </section>
+
+  <section id="tab-logs" class="tab">
+    <pre id="logBox" class="code log"></pre>
+  </section>
+</main>
+<script src="app.js"></script>
+</body>
+</html>

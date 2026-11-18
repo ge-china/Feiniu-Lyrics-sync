@@ -1,0 +1,7 @@
+#!/bin/bash
+# 安装后修正脚本权限，确保后续生命周期调用可直接执行
+APPDIR="${TRIM_APPDEST:-/var/apps/musictb/target}"
+chmod 755 "$APPDIR/../cmd/"* 2>/dev/null || true
+mkdir -p "${TRIM_PKGVAR:-/var/apps/musictb/var}/backup" 2>/dev/null || true
+mkdir -p "${TRIM_PKGVAR:-/var/apps/musictb/var}/sources" 2>/dev/null || true
+exit 0

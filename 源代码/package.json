@@ -1,0 +1,16 @@
+{
+  "name": "musictb",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "飞牛音乐歌词同步下载器",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js"
+  },
+  "dependencies": {
+    "music-metadata": "^11.9.0",
+    "node-taglib-sharp": "^5.1.0",
+    "opencc-js": "^1.4.2"
+  }
+}

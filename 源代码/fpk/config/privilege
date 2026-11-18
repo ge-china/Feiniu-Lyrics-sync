@@ -1,0 +1,7 @@
+{
+  "defaults": {
+    "run-as": "package"
+  },
+  "username": "musictb_user",
+  "groupname": "musictb_group"
+}

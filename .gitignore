@@ -1,0 +1,27 @@
+# 依赖
+node_modules/
+
+# 构建产物与安装包
+安装包/
+*.fpk
+源代码/fpk/musictb.fpk
+源代码/fpk/_check/
+源代码/fpk/app/server/
+
+# 工具二进制
+工具/*.exe
+工具/fnpack-linux-amd64
+工具/*.tar.gz
+
+# 运行数据与测试数据
+源代码/data/
+testdata*/
+源代码/testdata*/
+源代码/testlib*/
+源代码/testlib*/
+*.log
+*.bak
+
+# 系统
+.DS_Store
+Thumbs.db

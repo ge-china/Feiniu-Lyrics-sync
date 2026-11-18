@@ -1,0 +1,17 @@
+{
+  ".url": {
+    "musictb.main": {
+      "title": "飞牛歌词同步",
+      "icon": "images/icon_{0}.png",
+      "type": "iframe",
+      "protocol": "",
+      "gatewayPrefix": "/app/musictb",
+      "gatewaySocket": "app.sock",
+      "url": "/app/musictb/",
+      "allUsers": false,
+      "control": {
+        "accessPerm": "readonly"
+      }
+    }
+  }
+}

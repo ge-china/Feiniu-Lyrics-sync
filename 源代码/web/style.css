@@ -1,0 +1,55 @@
+:root{--bg:#0f1115;--card:#171a21;--line:#242a35;--text:#e6e9ef;--muted:#8b94a7;--pri:#3d7eff;--ok:#2ecc71;--bad:#ff5d5d;}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font:14px/1.6 -apple-system,"Segoe UI","Microsoft YaHei",sans-serif}
+header{display:flex;align-items:center;justify-content:space-between;padding:14px 20px;border-bottom:1px solid var(--line);position:sticky;top:0;background:rgba(15,17,21,.92);backdrop-filter:blur(8px);z-index:9}
+.brand{font-weight:600;font-size:16px}
+.badges span{margin-left:8px;padding:3px 9px;border:1px solid var(--line);border-radius:99px;font-size:12px;color:var(--muted)}
+main{max-width:1180px;margin:0 auto;padding:18px 20px 60px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px;margin-bottom:14px}
+.row{display:flex;gap:10px;align-items:center;margin-bottom:10px;flex-wrap:wrap}
+.grow{flex:1;min-width:200px}
+input,select,button{font:inherit;color:var(--text);background:#10141b;border:1px solid var(--line);border-radius:8px;padding:8px 10px;outline:none}
+input:focus,select:focus{border-color:var(--pri)}
+button{cursor:pointer;background:#1b212b}
+button:hover{border-color:#3a4557}
+button.primary{background:var(--pri);border-color:var(--pri);color:#fff}
+button.ghost{background:transparent;color:var(--muted)}
+.progress{position:relative;height:22px;background:#10141b;border-radius:8px;overflow:hidden;border:1px solid var(--line)}
+.progress .bar{height:100%;width:0;background:linear-gradient(90deg,#3d7eff,#7aa7ff);transition:width .2s}
+.progress span{position:absolute;left:10px;top:0;line-height:22px;font-size:12px;color:#dfe6f5}
+.tabs{display:flex;gap:6px;margin:6px 0 12px;flex-wrap:wrap}
+.tabs button{padding:7px 14px;border-radius:8px;color:var(--muted)}
+.tabs button.active{background:#1d2431;color:var(--text);border-color:#31405a}
+.tab{display:none}
+.tab.active{display:block}
+.tbl{width:100%;border-collapse:collapse;font-size:13px}
+.tbl th,.tbl td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+.tbl th{color:var(--muted);font-weight:500}
+.tbl tr:hover td{background:#141922}
+.tag{padding:2px 8px;border-radius:99px;font-size:12px;border:1px solid var(--line)}
+.tag.ok{color:var(--ok);border-color:rgba(46,204,113,.4)}
+.tag.miss{color:#ffb454;border-color:rgba(255,180,84,.4)}
+.tag.no{color:var(--bad);border-color:rgba(255,93,93,.4)}
+.muted{color:var(--muted);font-size:12px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:12px;margin-bottom:16px}
+.grid label{display:flex;flex-direction:column;gap:6px;font-size:13px;color:var(--muted)}
+.grid label.check{flex-direction:row;align-items:center;gap:8px;color:var(--text)}
+.sources{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:8px;margin-bottom:14px}
+.sources label{display:flex;align-items:center;gap:8px;background:#10141b;border:1px solid var(--line);border-radius:8px;padding:8px 10px}
+.code{background:#0b0e14;border:1px solid var(--line);border-radius:8px;padding:12px;white-space:pre-wrap;word-break:break-all;font:12px/1.55 ui-monospace,Consolas,monospace;color:#c8d1e0;max-height:420px;overflow:auto}
+.log{max-height:520px}
+.hit{border:1px solid var(--line);border-radius:10px;padding:10px 12px;margin-bottom:10px;background:#12161e}
+.hit .top{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.hit .score{color:#7aa7ff;font-weight:600}
+.hit pre{max-height:150px;overflow:auto;margin:8px 0 0}
+.warn{color:#ffb454}
+
+button.danger{background:#3a1d20;border-color:#6d3138;color:#ff9a9a}
+button.danger:hover{border-color:#a34049}
+.tbl td:first-child,.tbl th:first-child{width:34px}
+
+.warnbox{background:#3a2a12;border:1px solid #6b4a17;color:#ffce7a;border-radius:10px;padding:10px 12px;margin-bottom:12px;font-size:13px}
+
+.cand{display:flex;flex-wrap:wrap;gap:8px;align-items:center;padding:8px 0;border-top:1px solid var(--line)}
+.candmeta{flex:1;min-width:260px}
+.code.mini{max-height:90px;margin:6px 0 0;flex-basis:100%}

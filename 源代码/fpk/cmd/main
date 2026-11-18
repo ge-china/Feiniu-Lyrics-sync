@@ -1,0 +1,88 @@
+#!/bin/bash
+set -u
+
+APPDIR="${TRIM_APPDEST:-/var/apps/musictb/target}"
+DATADIR="${TRIM_PKGVAR:-/var/apps/musictb/var}"
+LOGFILE="$DATADIR/server.log"
+PIDFILE="$DATADIR/server.pid"
+
+log() {
+  mkdir -p "$DATADIR" 2>/dev/null
+  echo "[$(date '+%Y-%m-%d %H:%M:%S')] $*" >> "$LOGFILE" 2>/dev/null
+  echo "$*"
+}
+
+fail() {
+  log "ERROR: $*"
+  if [ -n "${TRIM_TEMP_LOGFILE:-}" ]; then echo "$*" > "$TRIM_TEMP_LOGFILE"; fi
+  exit 1
+}
+
+find_node() {
+  for c in /var/apps/nodejs_v22/target/bin/node /var/apps/nodejs_v22/target/bin/nodejs /usr/local/bin/node /usr/bin/node; do
+    if [ -x "$c" ]; then echo "$c"; return 0; fi
+  done
+  if command -v node >/dev/null 2>&1; then command -v node; return 0; fi
+  return 1
+}
+
+start() {
+  mkdir -p "$DATADIR" "$DATADIR/backup" "$DATADIR/sources" 2>/dev/null
+
+  if [ -f "$PIDFILE" ] && kill -0 "$(cat "$PIDFILE" 2>/dev/null)" 2>/dev/null; then
+    log "already running pid=$(cat "$PIDFILE")"
+    exit 0
+  fi
+
+  [ -d "$APPDIR/server" ] || fail "缺少程序目录 $APPDIR/server"
+  [ -f "$APPDIR/server/src/server.js" ] || fail "缺少 $APPDIR/server/src/server.js"
+
+  NODE_BIN="$(find_node)" || fail "未找到 Node 运行时：请在应用中心安装 nodejs_v22 后重试"
+
+  cd "$APPDIR/server" || fail "无法进入 $APPDIR/server"
+  log "start: node=$NODE_BIN version=$("$NODE_BIN" -v 2>&1) dir=$APPDIR data=$DATADIR"
+
+  rm -f "$DATADIR/port.txt"
+  MUSICTB_DATA="$DATADIR" nohup "$NODE_BIN" src/server.js >> "$LOGFILE" 2>&1 &
+  echo $! > "$PIDFILE"
+
+  for i in 1 2 3 4 5 6 7 8 9 10; do
+    sleep 1
+    if ! kill -0 "$(cat "$PIDFILE" 2>/dev/null)" 2>/dev/null; then break; fi
+    if [ -f "$DATADIR/port.txt" ]; then
+      P="$(cat "$DATADIR/port.txt" 2>/dev/null)"
+      if [ -n "$P" ] && (echo > /dev/tcp/127.0.0.1/"$P") >/dev/null 2>&1; then
+        log "started ok pid=$(cat "$PIDFILE") port=$P (网关入口 /app/musictb)"
+        exit 0
+      fi
+    fi
+  done
+
+  log "启动失败，最后 30 行日志："
+  tail -n 30 "$LOGFILE" >> /dev/null 2>&1
+  tail -n 30 "$LOGFILE" 2>/dev/null | while read -r line; do log "  $line"; done
+  fail "服务未监听 $PORT 端口"
+}
+
+stop() {
+  if [ -f "$PIDFILE" ]; then
+    PID="$(cat "$PIDFILE" 2>/dev/null)"
+    kill "$PID" 2>/dev/null || true
+    for i in 1 2 3 4 5; do
+      kill -0 "$PID" 2>/dev/null || break
+      sleep 1
+    done
+    kill -9 "$PID" 2>/dev/null || true
+    rm -f "$PIDFILE"
+  fi
+  exit 0
+}
+
+case "$1" in
+  start) start ;;
+  stop) stop ;;
+  status)
+    if [ -f "$PIDFILE" ] && kill -0 "$(cat "$PIDFILE" 2>/dev/null)" 2>/dev/null; then exit 0; else exit 3; fi
+    ;;
+  *) exit 1 ;;
+esac

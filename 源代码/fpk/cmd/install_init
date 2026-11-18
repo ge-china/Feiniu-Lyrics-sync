@@ -1,0 +1,3 @@
+#!/bin/bash
+mkdir -p "${TRIM_PKGVAR:?}" "${TRIM_PKGVAR}/backup" "${TRIM_PKGVAR}/sources"
+exit 0
