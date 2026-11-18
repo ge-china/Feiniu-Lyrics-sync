@@ -16,14 +16,14 @@ git config https.proxy http://127.0.0.1:7890
 ```
 
 3. 到 GitHub 网页建空仓库（**不要**勾选 README / .gitignore / License）
-   - 名称：`feiniu-geci-tongbu`（GitHub 不支持中文仓库名）
+   - 名称：`Feiniu-Lyrics-sync`（GitHub 不支持中文仓库名）
    - 描述：`飞牛 fnOS 音乐歌词自动补全`
    - 可见性：Public
 
 4. 推送：
 
 ```bash
-git remote add origin https://github.com/<你的用户名>/feiniu-geci-tongbu.git
+git remote add origin https://github.com/<你的用户名>/Feiniu-Lyrics-sync.git
 git branch -M main
 git push -u origin main
 ```
@@ -31,7 +31,7 @@ git push -u origin main
 如果用 Token 推送：
 
 ```bash
-git remote set-url origin https://<用户名>:<TOKEN>@github.com/<用户名>/feiniu-geci-tongbu.git
+git remote set-url origin https://<用户名>:<TOKEN>@github.com/<用户名>/Feiniu-Lyrics-sync.git
 git push -u origin main
 ```
 

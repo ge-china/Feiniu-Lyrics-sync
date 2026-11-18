@@ -2,8 +2,8 @@
 
 ## 仓库基础信息
 
-- **仓库名**：`feiniu-geci-tongbu`
-  （GitHub 仓库名只支持 ASCII；中文名只能放在描述和 README 标题里）
+- **仓库名**：`Feiniu-Lyrics-sync`
+  （GitHub 仓库名不支持空格与中文，用连字符；界面上显示的名称仍是中文「飞牛歌词同步」）
 - **可见性**：Public
 - **简介（Description，≤350 字符）**：
 
