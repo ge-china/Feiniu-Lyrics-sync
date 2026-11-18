@@ -31,6 +31,14 @@
 - **删除歌词** — 勾选批量删除，可选删文件或清标签
 - **自定义源** — 往数据目录放一个 `.js` 就能接入自己的歌词源
 
+## 下载
+
+| 来源 | 链接 |
+|---|---|
+| GitHub（推荐，含更新记录） | [Releases](https://github.com/ge-nas/Feiniu-Lyrics-sync/releases) |
+| 直链（v0.4.0） | [feiniu-lyrics-sync-0.4.0.fpk](https://github.com/ge-nas/Feiniu-Lyrics-sync/releases/download/v0.4.0/feiniu-lyrics-sync-0.4.0.fpk) |
+| Gitee 镜像 | [ge-china/feiniu-lyrics-sync](https://gitee.com/ge-china/feiniu-lyrics-sync) |
+
 ## 安装
 
 1. 从 [Releases](../../releases) 下载 `飞牛歌词同步-x.y.z.fpk`
