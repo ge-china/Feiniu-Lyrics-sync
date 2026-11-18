@@ -36,9 +36,9 @@
 | 来源 | 链接 |
 |---|---|
 | GitHub（推荐，含更新记录） | [Releases](https://github.com/ge-nas/Feiniu-Lyrics-sync/releases) |
-| 直链（v0.4.0） | [feiniu-lyrics-sync-0.4.0.fpk](https://github.com/ge-nas/Feiniu-Lyrics-sync/releases/download/v0.4.0/feiniu-lyrics-sync-0.4.0.fpk) |
+| 直链（v0.4.1） | [feiniu-lyrics-sync-0.4.1.fpk](https://github.com/ge-nas/Feiniu-Lyrics-sync/releases/download/v0.4.1/feiniu-lyrics-sync-0.4.1.fpk) |
 | Gitee 镜像 | [ge-china/feiniu-lyrics-sync](https://gitee.com/ge-china/feiniu-lyrics-sync) |
-| Gitee 直链（v0.4.0，国内快） | [feiniu-lyrics-sync-0.4.0.fpk](https://gitee.com/ge-china/feiniu-lyrics-sync/raw/dist/dist-feiniu-lyrics-sync-0.4.0.fpk) |
+| Gitee 直链（v0.4.1，国内快） | [feiniu-lyrics-sync-0.4.1.fpk](https://gitee.com/ge-china/feiniu-lyrics-sync/raw/dist/dist-feiniu-lyrics-sync-0.4.1.fpk) |
 
 ## 安装
 
