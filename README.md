@@ -36,8 +36,8 @@
 
 | 来源 | 链接 |
 |---|---|
-| GitHub 直链（v0.5.0） | [feiniu-lyrics-sync-0.5.0.fpk](https://raw.githubusercontent.com/ge-china/Feiniu-Lyrics-sync/dist/feiniu-lyrics-sync-0.5.0.fpk) |
-| Gitee 直链（v0.5.0，国内快） | [飞牛歌词同步-0.5.0.fpk](https://gitee.com/ge-china/feiniu-lyrics-sync/raw/dist/dist-feiniu-lyrics-sync-0.5.0.fpk) |
+| GitHub 直链（v0.5.1） | [feiniu-lyrics-sync-0.5.1.fpk](https://raw.githubusercontent.com/ge-china/Feiniu-Lyrics-sync/dist/feiniu-lyrics-sync-0.5.1.fpk) |
+| Gitee 直链（v0.5.1，国内快） | [飞牛歌词同步-0.5.1.fpk](https://gitee.com/ge-china/feiniu-lyrics-sync/raw/dist/dist-feiniu-lyrics-sync-0.5.1.fpk) |
 | GitHub 发行说明 | [Releases](https://github.com/ge-china/Feiniu-Lyrics-sync/releases) |
 | Gitee 发行说明 | [发行版](https://gitee.com/ge-china/feiniu-lyrics-sync/releases) |
 
@@ -144,9 +144,21 @@ node 工具/mkfpk.mjs 源代码/fpk 安装包/飞牛歌词同步-x.y.z.fpk
 写 `.lrc` 只新增文本文件，不碰音频。写内嵌标签会重写文件标签区（音轨数据不变），建议开启「改标签前备份音频」。
 </details>
 
+## 开发者与联系方式
+
+- **开发者**：ge-china
+- **邮箱**：ge@tzge.cc
+- **项目主页**：https://github.com/ge-china/Feiniu-Lyrics-sync
+- **问题反馈**：GitHub Issues 或 Gitee Issues
+
 ## 免责声明
 
-歌词内容来自第三方公开接口，**版权归原作者与词作者所有**。本项目仅用于个人本地补全，不缓存、不分发、不提供歌词下载服务。请勿用于商业用途。
+1. 本应用为第三方开源工具，与飞牛（fnOS）官方无任何隶属或合作关系。
+2. 本应用按「现状」提供，不提供任何明示或暗示的担保，包括但不限于适用性、稳定性与数据安全。
+3. 使用本应用产生的风险由使用者自行承担。因使用或无法使用本应用导致的任何数据丢失、文件损坏、设备故障或法律纠纷，开发者不承担责任。
+4. 歌词与封面均来自第三方公开接口，**版权归原作者、词作者及唱片公司所有**。本应用仅在本地为用户补全文件，不缓存、不分发、不提供任何内容下载服务。
+5. 请勿将本应用用于商业用途或二次分发；开源许可以 [LICENSE](LICENSE) 为准。
+6. 修改音乐文件标签前请自行备份。默认不覆盖已有歌词，写入内嵌标签前建议开启「先备份音频」。
 
 ## License
 

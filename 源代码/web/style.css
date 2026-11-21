@@ -59,3 +59,10 @@ button.danger:hover{border-color:#a34049}
 .covercard img{width:100%;aspect-ratio:1/1;object-fit:cover;border-radius:8px;background:#0b0e14}
 .covercard .meta{font-size:12px;color:var(--muted);line-height:1.4;word-break:break-all}
 .covercard .meta b{color:var(--text)}
+
+.about{background:#10141b;border:1px solid var(--line);border-radius:10px;padding:14px 16px;font-size:13px;line-height:1.8}
+.about .rowline{display:flex;gap:10px;flex-wrap:wrap}
+.about .k{color:var(--muted);min-width:70px}
+.about .disc{margin-top:10px;padding-top:10px;border-top:1px solid var(--line);color:var(--muted);font-size:12px;line-height:1.9}
+.about .disc b{color:#ffb454}
+.about a{color:#7aa7ff;text-decoration:none}

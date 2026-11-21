@@ -29,6 +29,7 @@ function render() {
   if (document.activeElement !== $('#root')) $('#root').value = state.config.libraryRoot || '';
   renderSources();
   renderDiag();
+  renderAbout();
   renderJob();
   fillSettings();
 }
@@ -48,6 +49,26 @@ function fillSettings() {
   $('#autoEnabled').checked = !!c.autoEnabled;
   $('#autoInterval').value = c.autoIntervalMinutes;
   $('#srcDir').value = state.dataDir ? state.dataDir + '\\sources' : '';
+}
+
+function renderAbout() {
+  const el = $('#about');
+  if (!el) return;
+  const app = (state && state.app) || {};
+  el.innerHTML =
+    '<div class="rowline"><span class="k">应用</span><span><b>' + esc(app.title || '飞牛歌词同步') + '</b>　v' + esc(app.version || '') + '</span></div>' +
+    '<div class="rowline"><span class="k">开发者</span><span>' + esc(app.author || 'ge-china') + '</span></div>' +
+    '<div class="rowline"><span class="k">联系邮箱</span><span>' + esc(app.email || 'ge@tzge.cc') + '</span></div>' +
+    '<div class="rowline"><span class="k">项目主页</span><span><a href="' + esc(app.repo || '') + '" target="_blank" rel="noopener">' + esc(app.repo || '') + '</a></span></div>' +
+    '<div class="disc">' +
+    '<b>免责声明</b><br>' +
+    '1. 本应用为第三方开源工具，与飞牛（fnOS）官方无任何隶属或合作关系。<br>' +
+    '2. 本应用按「现状」提供，不提供任何明示或暗示的担保，包括但不限于适用性、稳定性与数据安全。<br>' +
+    '3. 使用本应用产生的风险由使用者自行承担。因使用或无法使用本应用导致的任何数据丢失、文件损坏、设备故障或法律纠纷，开发者不承担责任。<br>' +
+    '4. 歌词与封面均来自第三方公开接口，版权归原作者、词作者及唱片公司所有。本应用仅在本地为用户补全文件，不缓存、不分发、不提供任何内容下载服务。<br>' +
+    '5. 请勿将本应用用于商业用途或二次分发；开源许可以项目仓库内的 LICENSE 为准。<br>' +
+    '6. 修改音乐文件标签前请自行备份。默认不覆盖已有歌词，写入内嵌标签前建议开启「先备份音频」。' +
+    '</div>';
 }
 
 function renderDiag() {

@@ -3,6 +3,9 @@ import path from 'node:path';
 
 export const APP_NAME = 'musictb';
 export const APP_TITLE = '飞牛歌词同步';
+export const APP_AUTHOR = 'ge-china';
+export const APP_EMAIL = 'ge@tzge.cc';
+export const APP_REPO = 'https://github.com/ge-china/Feiniu-Lyrics-sync';
 
 export const dataDir = process.env.MUSICTB_DATA || process.env.TRIM_PKGVAR || path.join(process.cwd(), 'data');
 export const backupDir = path.join(dataDir, 'backup');

@@ -3,7 +3,7 @@ import fsp from 'node:fs/promises';
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { loadConfig, saveConfig, backupDir, userSourceDir, dataDir, APP_TITLE, APP_NAME } from './config.js';
+import { loadConfig, saveConfig, backupDir, userSourceDir, dataDir, APP_TITLE, APP_NAME, APP_AUTHOR, APP_EMAIL, APP_REPO } from './config.js';
 import { loadLibrary, saveLibrary, patchTrack, flushLibrary, stats } from './store.js';
 import { scanLibrary, sidecarOf, checkWritable, findExistingLyric } from './scanner.js';
 import { searchCovers, fetchImage, isAllowedImageUrl } from './covers.js';
@@ -23,6 +23,19 @@ const PORT = Number(process.env.PORT || 0);
 let cfg = loadConfig();
 let userSources = {};
 let autoTimer = null;
+
+function readVersion() {
+  try {
+    const pkg = JSON.parse(fs.readFileSync(path.join(__dirname, '..', 'package.json'), 'utf8'));
+    if (pkg.version) return pkg.version;
+  } catch (e) {}
+  try {
+    const mf = fs.readFileSync(path.join(__dirname, '..', 'package.json'), 'utf8');
+    const m = mf.match(/"version"\s*:\s*"([^"]+)"/);
+    if (m) return m[1];
+  } catch (e) {}
+  return '';
+}
 
 function json(res, code, obj) {
   const body = JSON.stringify(obj);
@@ -226,7 +239,14 @@ async function handleApi(req, res, u) {
   if (p === '/api/state' && req.method === 'GET') {
     userSources = await loadUserSources(userSourceDir);
     return json(res, 200, {
-      app: { name: APP_NAME, title: APP_TITLE },
+      app: {
+        name: APP_NAME,
+        title: APP_TITLE,
+        version: readVersion(),
+        author: APP_AUTHOR,
+        email: APP_EMAIL,
+        repo: APP_REPO
+      },
       config: cfg,
       stats: stats(),
       job: getJob(),
