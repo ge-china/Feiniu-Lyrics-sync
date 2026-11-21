@@ -36,10 +36,10 @@
 
 | 来源 | 链接 |
 |---|---|
-| GitHub（推荐，含更新记录） | [Releases](https://github.com/ge-china/Feiniu-Lyrics-sync/releases) |
-| 直链（v0.5.0） | [feiniu-lyrics-sync-0.5.0.fpk](https://github.com/ge-china/Feiniu-Lyrics-sync/releases/download/v0.5.0/feiniu-lyrics-sync-0.5.0.fpk) |
-| Gitee 镜像 | [ge-china/feiniu-lyrics-sync](https://gitee.com/ge-china/feiniu-lyrics-sync) |
-| Gitee 直链（v0.5.0，国内快） | [飞牛歌词同步-0.5.0.fpk](https://gitee.com/ge-china/feiniu-lyrics-sync/releases/download/v0.5.0/%E9%A3%9E%E7%89%9B%E6%AD%8C%E8%AF%8D%E5%90%8C%E6%AD%A5-0.4.1.fpk) |
+| GitHub 直链（v0.5.0） | [feiniu-lyrics-sync-0.5.0.fpk](https://raw.githubusercontent.com/ge-china/Feiniu-Lyrics-sync/dist/feiniu-lyrics-sync-0.5.0.fpk) |
+| Gitee 直链（v0.5.0，国内快） | [飞牛歌词同步-0.5.0.fpk](https://gitee.com/ge-china/feiniu-lyrics-sync/raw/dist/dist-feiniu-lyrics-sync-0.5.0.fpk) |
+| GitHub 发行说明 | [Releases](https://github.com/ge-china/Feiniu-Lyrics-sync/releases) |
+| Gitee 发行说明 | [发行版](https://gitee.com/ge-china/feiniu-lyrics-sync/releases) |
 
 ## 安装
 
