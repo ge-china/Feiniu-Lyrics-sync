@@ -83,12 +83,23 @@
 
   <section id="tab-cover" class="tab">
     <div class="row">
+      <button id="btnCoverSync" class="primary">一键补全缺失封面</button>
+      <button id="btnCoverSyncAll" class="ghost">重新匹配全部（覆盖）</button>
+      <span class="muted" id="coverJobInfo"></span>
+    </div>
+    <div class="row">
       <input id="cTitle" class="grow" placeholder="歌名">
       <input id="cArtist" class="grow" placeholder="歌手">
       <button id="btnCoverSearch" class="primary">搜索封面</button>
       <span class="muted" id="coverTarget"></span>
     </div>
     <div id="coverGrid" class="covergrid"></div>
+    <h3 id="coverPendingTitle" style="display:none">封面待确认</h3>
+    <div class="row" id="coverPendingBar" style="display:none">
+      <button id="btnCoverAutoAll" class="primary">全部按最高分处理</button>
+      <span class="muted" id="coverPendingInfo"></span>
+    </div>
+    <div id="coverPendingList"></div>
   </section>
 
   <section id="tab-settings" class="tab">
@@ -107,6 +118,8 @@
           <option value="both">两者都写</option>
         </select>
       </label>
+      <label>封面最低分 <input id="coverMinScore" type="number" min="0" max="150"></label>
+      <label class="check"><input id="coverAsk" type="checkbox"> 封面有多个候选时询问</label>
       <label>写入方式
         <select id="writeMode">
           <option value="lrc">独立 .lrc 文件</option>

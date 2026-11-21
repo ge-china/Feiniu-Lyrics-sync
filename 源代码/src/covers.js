@@ -159,3 +159,18 @@ export async function fetchImage(url) {
   if (buf.length < 1024) throw new Error('图片过小');
   return { buf: buf, type: type };
 }
+
+// 只有「分数接近且指向不同专辑」才算有歧义；同一专辑的不同源视为同一封面
+export function isAmbiguousCover(ranked, track) {
+  if (!ranked || ranked.length < 2) return false;
+  const a = ranked[0].cand;
+  const b = ranked[1].cand;
+  const diff = ranked[0].score - ranked[1].score;
+  if (diff >= 10) return false;
+  if (a.url === b.url) return false;
+  const albA = String(a.album || "").trim();
+  const albB = String(b.album || "").trim();
+  if (albA && albB && albA === albB) return false;
+  if (track && track.album && albA && albA === String(track.album).trim()) return false;
+  return true;
+}

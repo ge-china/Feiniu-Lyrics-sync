@@ -38,6 +38,8 @@ function fillSettings() {
   const c = state.config;
   $('#downloadMode').value = c.downloadMode || 'ask';
   if ($('#coverMode')) $('#coverMode').value = c.coverMode || 'sidecar';
+  if ($('#coverMinScore')) $('#coverMinScore').value = c.coverMinScore || 50;
+  if ($('#coverAsk')) $('#coverAsk').checked = c.coverAskAmbiguous !== false;
   $('#writeMode').value = c.writeMode || 'lrc';
   $('#minScore').value = c.minScore;
   $('#concurrency').value = c.concurrency;
@@ -208,6 +210,8 @@ $('#btnSave').onclick = async function () {
   const body = {
     downloadMode: $('#downloadMode').value,
     coverMode: $('#coverMode') ? $('#coverMode').value : undefined,
+    coverMinScore: $('#coverMinScore') ? Number($('#coverMinScore').value) : undefined,
+    coverAskAmbiguous: $('#coverAsk') ? $('#coverAsk').checked : undefined,
     writeMode: $('#writeMode').value,
     minScore: Number($('#minScore').value),
     concurrency: Number($('#concurrency').value),
@@ -397,4 +401,76 @@ document.addEventListener('click', async function (e) {
       refresh();
     } else alert('写入失败：' + (r.error || ''));
   }
+});
+
+/* ---------------- 封面批量 ---------------- */
+async function loadCoverPending() {
+  const d = await api('api/cover/pending');
+  const bar = $('#coverPendingBar');
+  const title = $('#coverPendingTitle');
+  const info = $('#coverPendingInfo');
+  const box = $('#coverPendingList');
+  if (!box) return;
+  if (!d.count) {
+    if (bar) bar.style.display = 'none';
+    if (title) title.style.display = 'none';
+    box.innerHTML = '';
+    return;
+  }
+  if (bar) bar.style.display = 'flex';
+  if (title) title.style.display = 'block';
+  if (info) info.textContent = '共 ' + d.count + ' 首待确认';
+  box.innerHTML = d.items.map(function (it) {
+    const cards = (it.candidates || []).map(function (c, i) {
+      const src = 'api/cover-proxy?u=' + encodeURIComponent(c.url);
+      return '<div class="covercard"><img src="' + src + '" loading="lazy" alt="">' +
+        '<div class="meta"><b>' + esc(c.title) + '</b><br>' + esc(c.artist) + ' · ' + esc(c.album || '') + '<br>' + esc(c.source) + ' · ' + c.score + ' 分</div>' +
+        '<button data-cover-choose-file="' + esc(it.file) + '" data-cover-choose-idx="' + i + '">用这张</button></div>';
+    }).join('');
+    return '<div class="hit"><div class="top"><b>' + esc(it.title) + '</b><span class="muted">' + esc(it.artist) + ' · ' + esc(it.album || '') + '</span>' +
+      '<button class="ghost" data-cover-skip-file="' + esc(it.file) + '">跳过</button></div><div class="covergrid">' + cards + '</div></div>';
+  }).join('');
+}
+
+async function startCoverSync(overwrite) {
+  if (overwrite && !confirm('将为所有歌曲重新匹配封面并覆盖已有图片，确定吗？')) return;
+  const r = await api('api/cover/sync', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ overwrite: !!overwrite }) });
+  if (!r.ok) { alert(r.error || '启动失败'); return; }
+  const info = $('#coverJobInfo');
+  if (info) info.textContent = '开始匹配…';
+  const timer = setInterval(async function () {
+    const j = await api('api/job');
+    if (info) info.textContent = j.running ? ('进行中 ' + j.done + '/' + j.total + (j.current ? ' · ' + j.current : '')) : (j.summary || '完成');
+    if (!j.running) { clearInterval(timer); await loadCoverPending(); await refresh(); }
+  }, 1200);
+}
+
+const btnSync = $('#btnCoverSync');
+if (btnSync) btnSync.onclick = function () { startCoverSync(false); };
+const btnSyncAll = $('#btnCoverSyncAll');
+if (btnSyncAll) btnSyncAll.onclick = function () { startCoverSync(true); };
+const btnCA = $('#btnCoverAutoAll');
+if (btnCA) btnCA.onclick = async function () {
+  const r = await api('api/cover/auto-all', { method: 'POST', headers: { 'content-type': 'application/json' }, body: '{}' });
+  alert('已处理 ' + (r.done || 0) + ' 首，剩余 ' + (r.remaining || 0));
+  await loadCoverPending(); await refresh();
+};
+
+document.addEventListener('click', async function (e) {
+  const t = e.target;
+  if (t.dataset && t.dataset.coverChooseFile) {
+    const r = await api('api/cover/choose', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ file: t.dataset.coverChooseFile, index: Number(t.dataset.coverChooseIdx) }) });
+    if (!r.ok) alert('写入失败：' + (r.error || ''));
+    await loadCoverPending(); await refresh();
+    return;
+  }
+  if (t.dataset && t.dataset.coverSkipFile) {
+    await api('api/cover/skip', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ file: t.dataset.coverSkipFile }) });
+    await loadCoverPending(); await refresh();
+  }
+});
+
+// 切到封面 tab 时刷新待确认
+document.addEventListener('click', function (e) {
+  if (e.target && e.target.dataset && e.target.dataset.tab === 'cover') loadCoverPending();
 });

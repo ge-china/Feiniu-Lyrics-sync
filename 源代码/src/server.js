@@ -6,7 +6,8 @@ import { fileURLToPath } from 'node:url';
 import { loadConfig, saveConfig, backupDir, userSourceDir, dataDir, APP_TITLE, APP_NAME, APP_AUTHOR, APP_EMAIL, APP_REPO } from './config.js';
 import { loadLibrary, saveLibrary, patchTrack, flushLibrary, stats } from './store.js';
 import { scanLibrary, sidecarOf, checkWritable, findExistingLyric } from './scanner.js';
-import { searchCovers, fetchImage, isAllowedImageUrl } from './covers.js';
+import { searchCovers, fetchImage, isAllowedImageUrl, isAmbiguousCover } from './covers.js';
+import { loadCoverPending, addCoverPending, removeCoverPending, loadCoverChoices, rememberCoverChoice } from './coverqueue.js';
 import { writeCoverSidecar, writeCoverEmbedded, findCover } from './coverwriter.js';
 import { score as matchScore } from './match.js';
 import { resolveBest, listSources, loadUserSources, builtins, isAmbiguous, choiceKey, candidateId } from './sources/index.js';
@@ -186,6 +187,107 @@ async function processOne(track) {
   return res;
 }
 
+
+async function writeCoverTo(track, cand) {
+  const mode = cfg.coverMode || 'sidecar';
+  let sidecar = '';
+  let embed = false;
+  let err = '';
+  try {
+    const img = await fetchImage(cand.url);
+    if (mode === 'sidecar' || mode === 'both') {
+      sidecar = await writeCoverSidecar(track.file, img.buf, img.type);
+    }
+    if (mode === 'embed' || mode === 'both') {
+      const r2 = await writeCoverEmbedded(track.file, img.buf);
+      embed = r2.ok;
+      if (!r2.ok) err = r2.error || '';
+    }
+  } catch (e) {
+    return { ok: false, error: e.message };
+  }
+  const ok = !!sidecar || embed;
+  if (ok) {
+    patchTrack(track.file, { hasCover: true, coverPath: sidecar || undefined, coverSource: cand.source, lastTry: Date.now() });
+    rememberCoverChoice(track, cand);
+  }
+  return { ok: ok, sidecar: sidecar, embed: embed, error: err };
+}
+
+function toCoverPending(track, ranked) {
+  return {
+    file: track.file,
+    title: track.title,
+    artist: track.artist,
+    album: track.album,
+    duration: track.duration,
+    createdAt: Date.now(),
+    candidates: ranked.slice(0, 6).map(function (r) {
+      return { url: r.cand.url, source: r.cand.source, title: r.cand.title, artist: r.cand.artist, album: r.cand.album, duration: r.cand.duration, score: r.score };
+    })
+  };
+}
+
+async function runCoverSync(overwrite) {
+  const lib = loadLibrary();
+  let todo = lib.tracks.slice();
+  if (!overwrite) todo = todo.filter(function (t) { return !t.hasCover; });
+  startJob('cover', todo.length);
+  logLine('开始匹配封面：待处理 ' + todo.length + ' 首');
+
+  const minScore = Number(cfg.coverMinScore) || 50;
+  const choices = loadCoverChoices();
+  const limit = Math.max(1, Math.min(4, Number(cfg.concurrency) || 2));
+  let idx = 0;
+
+  async function worker() {
+    while (idx < todo.length) {
+      if (shouldStop()) return;
+      const t = todo[idx++];
+      updateJob({ current: (t.artist ? t.artist + ' - ' : '') + t.title });
+      try {
+        const list = await searchCovers(t, cfg, logLine);
+        let ranked = list.map(function (c) { return { cand: c, score: matchScore(t, c) }; })
+          .sort(function (a, b) { return b.score - a.score; });
+
+        const memKey = (t.artist || '') + '|' + (t.title || '');
+        const mem = choices[memKey];
+        if (mem && mem.url) {
+          for (const r of ranked) if (r.cand.url === mem.url) r.score += 50;
+          ranked.sort(function (a, b) { return b.score - a.score; });
+        }
+
+        const best = ranked[0];
+        const ambiguous = cfg.coverAskAmbiguous !== false && isAmbiguousCover(ranked, t);
+
+        if (!best || best.score < minScore) {
+          patchTrack(t.file, { coverStatus: 'nomatch', lastTry: Date.now() });
+          logLine('  未找到合适封面（' + (best ? best.score : 0) + '）');
+        } else if (ambiguous) {
+          addCoverPending(toCoverPending(t, ranked));
+          patchTrack(t.file, { coverStatus: 'pending', lastTry: Date.now() });
+          logLine('  有多个候选，待确认');
+        } else {
+          const w = await writeCoverTo(t, best.cand);
+          logLine(w.ok ? '  已写入封面（' + best.cand.source + ' ' + best.score + '）' : '  写入失败：' + (w.error || ''));
+        }
+      } catch (e) {
+        logLine('  出错：' + e.message);
+      }
+      const j = getJob();
+      updateJob({ done: j.done + 1, ok: j.ok + 1, fail: j.fail });
+      if (cfg.requestDelayMs) await new Promise(function (r) { setTimeout(r, Number(cfg.requestDelayMs)); });
+    }
+  }
+
+  const workers = [];
+  for (let i = 0; i < limit; i++) workers.push(worker());
+  await Promise.all(workers);
+  flushLibrary();
+  const pend = loadCoverPending().length;
+  finishJob('封面匹配结束：处理 ' + getJob().done + ' 首' + (pend ? '，待确认 ' + pend + ' 首' : ''));
+}
+
 async function runFill(onlyMissing) {
   const lib = loadLibrary();
   let todo = lib.tracks.slice();
@@ -255,6 +357,7 @@ async function handleApi(req, res, u) {
       })),
       dataDir: dataDir,
       pendingCount: loadPending().length,
+      coverPendingCount: loadCoverPending().length,
       runtime: { fnos: !!process.env.TRIM_API_TOKEN, node: process.version }
     });
   }
@@ -406,6 +509,55 @@ async function handleApi(req, res, u) {
   }
 
 
+
+
+  if (p === '/api/cover/sync' && req.method === 'POST') {
+    if (getJob().running) return json(res, 409, { ok: false, error: '已有任务在运行' });
+    const body = await readBody(req);
+    runCoverSync(body.overwrite === true);
+    return json(res, 202, { ok: true });
+  }
+
+  if (p === '/api/cover/pending' && req.method === 'GET') {
+    const list = loadCoverPending();
+    return json(res, 200, { ok: true, count: list.length, items: list });
+  }
+
+  if (p === '/api/cover/choose' && req.method === 'POST') {
+    const body = await readBody(req);
+    const list = loadCoverPending();
+    const item = list.find(function (x2) { return x2.file === body.file; });
+    if (!item) return json(res, 404, { ok: false, error: '待确认项不存在' });
+    const cand = (item.candidates || [])[body.index || 0];
+    if (!cand) return json(res, 400, { ok: false, error: '候选不存在' });
+    const track = (loadLibrary().tracks || []).find(function (t) { return t.file === item.file; }) || item;
+    const r2 = await writeCoverTo(track, cand);
+    if (r2.ok) removeCoverPending(item.file);
+    flushLibrary();
+    return json(res, 200, r2);
+  }
+
+  if (p === '/api/cover/skip' && req.method === 'POST') {
+    const body = await readBody(req);
+    if (body.file) { removeCoverPending(body.file); patchTrack(body.file, { coverStatus: 'skipped' }); }
+    flushLibrary();
+    return json(res, 200, { ok: true, count: loadCoverPending().length });
+  }
+
+  if (p === '/api/cover/auto-all' && req.method === 'POST') {
+    const list = loadCoverPending().slice();
+    let done = 0;
+    for (const item of list) {
+      const cand = (item.candidates || [])[0];
+      if (!cand) { removeCoverPending(item.file); continue; }
+      const track = (loadLibrary().tracks || []).find(function (t) { return t.file === item.file; }) || item;
+      const r2 = await writeCoverTo(track, cand);
+      if (r2.ok) done++;
+      removeCoverPending(item.file);
+    }
+    flushLibrary();
+    return json(res, 200, { ok: true, done: done, remaining: loadCoverPending().length });
+  }
 
   if (p === '/api/cover/search' && req.method === 'POST') {
     const body = await readBody(req);

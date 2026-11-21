@@ -36,8 +36,8 @@
 
 | 来源 | 链接 |
 |---|---|
-| GitHub 直链（v0.6.0） | [feiniu-lyrics-sync-0.6.0.fpk](https://raw.githubusercontent.com/ge-china/Feiniu-Lyrics-sync/dist/feiniu-lyrics-sync-0.6.0.fpk) |
-| Gitee 直链（v0.6.0，国内快） | [飞牛音乐歌词＆封面同步-0.6.0.fpk](https://gitee.com/ge-china/feiniu-lyrics-sync/raw/dist/dist-feiniu-lyrics-sync-0.6.0.fpk) |
+| GitHub 直链（v0.7.0） | [feiniu-lyrics-sync-0.7.0.fpk](https://raw.githubusercontent.com/ge-china/Feiniu-Lyrics-sync/dist/feiniu-lyrics-sync-0.7.0.fpk) |
+| Gitee 直链（v0.7.0，国内快） | [飞牛音乐歌词＆封面同步-0.7.0.fpk](https://gitee.com/ge-china/feiniu-lyrics-sync/raw/dist/dist-feiniu-lyrics-sync-0.7.0.fpk) |
 | GitHub 发行说明 | [Releases](https://github.com/ge-china/Feiniu-Lyrics-sync/releases) |
 | Gitee 发行说明 | [发行版](https://gitee.com/ge-china/feiniu-lyrics-sync/releases) |
 

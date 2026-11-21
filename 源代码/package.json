@@ -1,6 +1,6 @@
 {
   "name": "musictb",
-  "version": "0.6.0",
+  "version": "0.7.0",
   "private": true,
   "type": "module",
   "description": "飞牛音乐歌词同步下载器",
