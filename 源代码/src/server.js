@@ -6,6 +6,9 @@ import { fileURLToPath } from 'node:url';
 import { loadConfig, saveConfig, backupDir, userSourceDir, dataDir, APP_TITLE, APP_NAME } from './config.js';
 import { loadLibrary, saveLibrary, patchTrack, flushLibrary, stats } from './store.js';
 import { scanLibrary, sidecarOf, checkWritable, findExistingLyric } from './scanner.js';
+import { searchCovers, fetchImage, isAllowedImageUrl } from './covers.js';
+import { writeCoverSidecar, writeCoverEmbedded, findCover } from './coverwriter.js';
+import { score as matchScore } from './match.js';
 import { resolveBest, listSources, loadUserSources, builtins, isAmbiguous, choiceKey, candidateId } from './sources/index.js';
 import { loadPending, addPending, removePending, clearPending, loadChoices, rememberChoice } from './queue.js';
 import { writeLrc } from './writer.js';
@@ -382,6 +385,68 @@ async function handleApi(req, res, u) {
     return json(res, 200, { ok: true, done: done, total: results.length, results: results });
   }
 
+
+
+  if (p === '/api/cover/search' && req.method === 'POST') {
+    const body = await readBody(req);
+    const track = { title: body.title || '', artist: body.artist || '', album: body.album || '', duration: Number(body.duration || 0) };
+    if (!track.title) return json(res, 400, { ok: false, error: '缺少歌名' });
+    const lines = [];
+    const list = await searchCovers(track, cfg, function (l) { lines.push(l); });
+    const items = list.map(function (c) {
+      return {
+        source: c.source,
+        url: c.url,
+        proxy: '/api/cover-proxy?u=' + encodeURIComponent(c.url),
+        title: c.title,
+        artist: c.artist,
+        album: c.album,
+        duration: c.duration,
+        score: matchScore(track, c),
+        key: c.key
+      };
+    }).sort(function (a, b) { return b.score - a.score; });
+    return json(res, 200, { ok: true, count: items.length, items: items, log: lines });
+  }
+
+  if (p === '/api/cover-proxy' && req.method === 'GET') {
+    const imgUrl = u.searchParams.get('u') || '';
+    if (!isAllowedImageUrl(imgUrl)) { res.writeHead(403); return res.end('forbidden'); }
+    try {
+      const img = await fetchImage(imgUrl);
+      res.writeHead(200, { 'content-type': img.type, 'cache-control': 'public, max-age=86400' });
+      return res.end(img.buf);
+    } catch (e) {
+      res.writeHead(502); return res.end('fetch failed');
+    }
+  }
+
+  if (p === '/api/cover/apply' && req.method === 'POST') {
+    const body = await readBody(req);
+    if (!body.file || !body.url) return json(res, 400, { ok: false, error: '参数不足' });
+    if (!isAllowedImageUrl(body.url)) return json(res, 400, { ok: false, error: '不支持的图片来源' });
+    const mode = body.mode || cfg.coverMode || 'sidecar';
+    let sidecar = '';
+    let embed = false;
+    let err = '';
+    try {
+      const img = await fetchImage(body.url);
+      if (mode === 'sidecar' || mode === 'both') {
+        sidecar = await writeCoverSidecar(body.file, img.buf, img.type);
+      }
+      if (mode === 'embed' || mode === 'both') {
+        const r2 = await writeCoverEmbedded(body.file, img.buf);
+        embed = r2.ok;
+        if (!r2.ok) err = r2.error || '';
+      }
+    } catch (e) {
+      return json(res, 200, { ok: false, error: e.message });
+    }
+    const ok = !!sidecar || embed;
+    if (ok) patchTrack(body.file, { hasCover: true, coverPath: sidecar || undefined, coverSource: body.source || '', lastTry: Date.now() });
+    flushLibrary();
+    return json(res, 200, { ok: ok, sidecar: sidecar, embed: embed, error: err });
+  }
 
   if (p === '/api/pending' && req.method === 'GET') {
     const list = loadPending();

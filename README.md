@@ -28,6 +28,7 @@
 - **检索阶梯** — 歌名+歌手 → 去括号 → 繁简转换 → 专辑 → 去副标题 → 仅歌名 → 文件名，逐级降级，命中即停
 - **人工选版** — 全自动 / 多版本时询问 / 全部人工，三种模式；待确认列表里挑版本，选择会被记住
 - **两种写入** — 独立 `.lrc` 文件（可逆、通用）或音频内嵌标签（FLAC / MP3 / M4A）
+- **封面补全** — 搜索并写入专辑封面（网易云 / QQ / 酷狗），支持独立图片或内嵌
 - **删除歌词** — 勾选批量删除，可选删文件或清标签
 - **自定义源** — 往数据目录放一个 `.js` 就能接入自己的歌词源
 
@@ -36,9 +37,9 @@
 | 来源 | 链接 |
 |---|---|
 | GitHub（推荐，含更新记录） | [Releases](https://github.com/ge-china/Feiniu-Lyrics-sync/releases) |
-| 直链（v0.4.1） | [feiniu-lyrics-sync-0.4.1.fpk](https://github.com/ge-china/Feiniu-Lyrics-sync/releases/download/v0.4.1/feiniu-lyrics-sync-0.4.1.fpk) |
+| 直链（v0.5.0） | [feiniu-lyrics-sync-0.5.0.fpk](https://github.com/ge-china/Feiniu-Lyrics-sync/releases/download/v0.5.0/feiniu-lyrics-sync-0.5.0.fpk) |
 | Gitee 镜像 | [ge-china/feiniu-lyrics-sync](https://gitee.com/ge-china/feiniu-lyrics-sync) |
-| Gitee 直链（v0.4.1，国内快） | [飞牛歌词同步-0.4.1.fpk](https://gitee.com/ge-china/feiniu-lyrics-sync/releases/download/v0.4.1/%E9%A3%9E%E7%89%9B%E6%AD%8C%E8%AF%8D%E5%90%8C%E6%AD%A5-0.4.1.fpk) |
+| Gitee 直链（v0.5.0，国内快） | [飞牛歌词同步-0.5.0.fpk](https://gitee.com/ge-china/feiniu-lyrics-sync/releases/download/v0.5.0/%E9%A3%9E%E7%89%9B%E6%AD%8C%E8%AF%8D%E5%90%8C%E6%AD%A5-0.4.1.fpk) |
 
 ## 安装
 

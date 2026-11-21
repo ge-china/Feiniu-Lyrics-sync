@@ -36,6 +36,7 @@ function render() {
 function fillSettings() {
   const c = state.config;
   $('#downloadMode').value = c.downloadMode || 'ask';
+  if ($('#coverMode')) $('#coverMode').value = c.coverMode || 'sidecar';
   $('#writeMode').value = c.writeMode || 'lrc';
   $('#minScore').value = c.minScore;
   $('#concurrency').value = c.concurrency;
@@ -100,6 +101,7 @@ async function loadLibrary() {
     return '<tr><td><input type="checkbox" class="rowchk" data-file="' + esc(t.file) + '"></td><td>' + esc(t.title) + '</td><td>' + esc(t.artist) + '</td><td>' + esc(t.album) + '</td><td>' + fmtDur(t.duration) + '</td>' +
       '<td><span class="tag ' + cls + '">' + label + '</span></td><td>' + esc(t.source || '') + '</td>' +
       '<td><button data-search-file="' + esc(t.file) + '" data-title="' + esc(t.title) + '" data-artist="' + esc(t.artist) + '" data-dur="' + (t.duration || 0) + '">手动搜索</button> ' +
+      '<button data-cover-file="' + esc(t.file) + '" data-title="' + esc(t.title) + '" data-artist="' + esc(t.artist) + '" data-album="' + esc(t.album || '') + '" data-dur="' + (t.duration || 0) + '">封面</button> ' +
       '<button data-del-file="' + esc(t.file) + '" class="danger">删歌词</button></td></tr>';
   }).join('');
   const wb = $('#permWarn');
@@ -184,6 +186,7 @@ $('#btnSave').onclick = async function () {
   document.querySelectorAll('#sourceBox input[data-src]').forEach(function (cb) { sources[cb.dataset.src] = cb.checked; });
   const body = {
     downloadMode: $('#downloadMode').value,
+    coverMode: $('#coverMode') ? $('#coverMode').value : undefined,
     writeMode: $('#writeMode').value,
     minScore: Number($('#minScore').value),
     concurrency: Number($('#concurrency').value),
@@ -318,3 +321,59 @@ if (btnAutoAll) btnAutoAll.onclick = async function () {
 };
 
 refresh();
+
+/* ---------------- 封面 ---------------- */
+let coverTarget = '';
+
+async function doCoverSearch(file, title, artist, album, dur) {
+  coverTarget = file || '';
+  const t = title || $('#cTitle').value.trim();
+  const ar = artist || $('#cArtist').value.trim();
+  if (!t) { alert('请填写歌名'); return; }
+  $('#coverTarget').textContent = coverTarget ? ('目标：' + coverTarget.split(/[\\/]/).pop()) : '仅搜索（不写入）';
+  $('#coverGrid').innerHTML = '<div class="muted">搜索中…</div>';
+  const r = await api('api/cover/search', {
+    method: 'POST',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify({ title: t, artist: ar, album: album || '', duration: dur || 0 })
+  });
+  if (!r.ok) { $('#coverGrid').innerHTML = '<div class="warn">' + esc(r.error || '搜索失败') + '</div>'; return; }
+  if (!r.count) { $('#coverGrid').innerHTML = '<div class="muted">没找到封面。日志：' + esc((r.log || []).join(' / ')) + '</div>'; return; }
+  $('#coverGrid').innerHTML = r.items.map(function (c, i) {
+    return '<div class="covercard">' +
+      '<img src="' + c.proxy + '" loading="lazy" alt="">' +
+      '<div class="meta"><b>' + esc(c.title) + '</b><br>' + esc(c.artist) + ' · ' + esc(c.album || '') + '<br>' + esc(c.source) + ' · ' + (c.score || 0) + ' 分</div>' +
+      '<button data-cover-url="' + esc(c.url) + '" data-cover-src="' + esc(c.source) + '" data-cover-idx="' + i + '">写入封面</button>' +
+      '</div>';
+  }).join('');
+}
+
+$('#btnCoverSearch').onclick = function () {
+  const file = coverTarget;
+  doCoverSearch(file, $('#cTitle').value.trim(), $('#cArtist').value.trim(), '', 0);
+};
+
+document.addEventListener('click', async function (e) {
+  const t = e.target;
+  if (t.dataset && t.dataset.coverFile) {
+    $('#cTitle').value = t.dataset.title || '';
+    $('#cArtist').value = t.dataset.artist || '';
+    document.querySelector('.tabs button[data-tab="cover"]').click();
+    doCoverSearch(t.dataset.coverFile, t.dataset.title, t.dataset.artist, t.dataset.album, Number(t.dataset.dur || 0));
+    return;
+  }
+  if (t.dataset && t.dataset.coverUrl) {
+    if (!coverTarget) { alert('请从「曲库」点「封面」进入，才能知道写到哪个文件'); return; }
+    t.disabled = true;
+    const r = await api('api/cover/apply', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ file: coverTarget, url: t.dataset.coverUrl, source: t.dataset.coverSrc })
+    });
+    t.disabled = false;
+    if (r.ok) {
+      alert('封面已写入' + (r.sidecar ? '：' + r.sidecar.split(/[\\/]/).pop() : '') + (r.embed ? '（内嵌）' : ''));
+      refresh();
+    } else alert('写入失败：' + (r.error || ''));
+  }
+});

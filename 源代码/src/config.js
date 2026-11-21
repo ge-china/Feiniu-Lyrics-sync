@@ -14,6 +14,7 @@ export const DEFAULTS = {
   libraryRoot: '',
   writeMode: 'lrc',
   downloadMode: 'ask',
+  coverMode: 'sidecar',
   sources: { lrclib: true, netease: true, qq: true, kugou: true, kuwo: false },
   userSources: [],
   minScore: 55,

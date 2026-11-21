@@ -2,6 +2,7 @@ import fs from 'node:fs/promises';
 import path from 'node:path';
 import { parseFile } from 'music-metadata';
 import { fromPath } from './parse.js';
+import { findCover } from './coverwriter.js';
 import { loadLibrary } from './store.js';
 
 const AUDIO = new Set(['.mp3', '.flac', '.m4a', '.aac', '.wav', '.ape', '.ogg', '.opus', '.wma', '.dsf', '.dff', '.aiff', '.aif']);
@@ -96,6 +97,9 @@ export async function scanLibrary(root, opts) {
     const hasEmbedded = lyricText(rawLyrics).replace(/\s/g, '').length > 10;
     const existingLyric = await findExistingLyric(f);
     const hasSidecar = !!existingLyric;
+    const existingCover = await findCover(f);
+    const embeddedPic = !!(common.picture && common.picture.length);
+    const hasCover = !!existingCover || embeddedPic;
 
     out.push({
       file: f,
@@ -109,6 +113,8 @@ export async function scanLibrary(root, opts) {
       hasEmbedded: hasEmbedded,
       hasSidecar: hasSidecar,
       lyricPath: existingLyric || '',
+      coverPath: existingCover || '',
+      hasCover: hasCover,
       hasLyrics: hasEmbedded || hasSidecar,
       status: (hasEmbedded || hasSidecar) ? 'ok' : 'missing'
     });

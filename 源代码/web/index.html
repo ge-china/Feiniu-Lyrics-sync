@@ -28,6 +28,7 @@
     <button data-tab="library" class="active">曲库</button>
     <button data-tab="search">手动搜索</button>
     <button data-tab="pending" id="tabBtnPending">待确认</button>
+    <button data-tab="cover">封面</button>
     <button data-tab="settings">设置</button>
     <button data-tab="sources">自定义源</button>
     <button data-tab="logs">日志</button>
@@ -80,6 +81,16 @@
     <div id="pendingList"></div>
   </section>
 
+  <section id="tab-cover" class="tab">
+    <div class="row">
+      <input id="cTitle" class="grow" placeholder="歌名">
+      <input id="cArtist" class="grow" placeholder="歌手">
+      <button id="btnCoverSearch" class="primary">搜索封面</button>
+      <span class="muted" id="coverTarget"></span>
+    </div>
+    <div id="coverGrid" class="covergrid"></div>
+  </section>
+
   <section id="tab-settings" class="tab">
     <div class="grid">
       <label>下载模式
@@ -87,6 +98,13 @@
           <option value="auto">全自动（分数最高直接写）</option>
           <option value="ask">多版本时询问（推荐）</option>
           <option value="manual">全部人工确认</option>
+        </select>
+      </label>
+      <label>封面写入方式
+        <select id="coverMode">
+          <option value="sidecar">独立图片文件（同名 .jpg）</option>
+          <option value="embed">写入音频内嵌封面</option>
+          <option value="both">两者都写</option>
         </select>
       </label>
       <label>写入方式

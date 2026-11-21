@@ -53,3 +53,9 @@ button.danger:hover{border-color:#a34049}
 .cand{display:flex;flex-wrap:wrap;gap:8px;align-items:center;padding:8px 0;border-top:1px solid var(--line)}
 .candmeta{flex:1;min-width:260px}
 .code.mini{max-height:90px;margin:6px 0 0;flex-basis:100%}
+
+.covergrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:12px}
+.covercard{border:1px solid var(--line);border-radius:10px;padding:8px;background:#12161e;display:flex;flex-direction:column;gap:6px}
+.covercard img{width:100%;aspect-ratio:1/1;object-fit:cover;border-radius:8px;background:#0b0e14}
+.covercard .meta{font-size:12px;color:var(--muted);line-height:1.4;word-break:break-all}
+.covercard .meta b{color:var(--text)}
