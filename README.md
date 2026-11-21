@@ -1,10 +1,10 @@
-# 飞牛歌词同步
+# 飞牛音乐歌词＆封面同步
 
 **给飞牛 fnOS 音乐库自动补全歌词的 NAS 应用。**
 
 扫描你的音乐目录，找出没有歌词的歌曲，从多个公开歌词源匹配带时间轴的 LRC，写到歌曲旁边或写进音频标签里。
 
-**国内镜像**：[Gitee · 飞牛歌词同步](https://gitee.com/ge-china/feiniu-lyrics-sync)（GitHub 访问慢时用这个）
+**国内镜像**：[Gitee · 飞牛音乐歌词＆封面同步](https://gitee.com/ge-china/feiniu-lyrics-sync)（GitHub 访问慢时用这个）
 
 <p>
   <img alt="fnOS" src="https://img.shields.io/badge/fnOS-1.1%2B-4C8DFF">
@@ -36,14 +36,14 @@
 
 | 来源 | 链接 |
 |---|---|
-| GitHub 直链（v0.5.1） | [feiniu-lyrics-sync-0.5.1.fpk](https://raw.githubusercontent.com/ge-china/Feiniu-Lyrics-sync/dist/feiniu-lyrics-sync-0.5.1.fpk) |
-| Gitee 直链（v0.5.1，国内快） | [飞牛歌词同步-0.5.1.fpk](https://gitee.com/ge-china/feiniu-lyrics-sync/raw/dist/dist-feiniu-lyrics-sync-0.5.1.fpk) |
+| GitHub 直链（v0.6.0） | [feiniu-lyrics-sync-0.6.0.fpk](https://raw.githubusercontent.com/ge-china/Feiniu-Lyrics-sync/dist/feiniu-lyrics-sync-0.6.0.fpk) |
+| Gitee 直链（v0.6.0，国内快） | [飞牛音乐歌词＆封面同步-0.6.0.fpk](https://gitee.com/ge-china/feiniu-lyrics-sync/raw/dist/dist-feiniu-lyrics-sync-0.6.0.fpk) |
 | GitHub 发行说明 | [Releases](https://github.com/ge-china/Feiniu-Lyrics-sync/releases) |
 | Gitee 发行说明 | [发行版](https://gitee.com/ge-china/feiniu-lyrics-sync/releases) |
 
 ## 安装
 
-1. 从 [Releases](../../releases) 下载 `飞牛歌词同步-x.y.z.fpk`
+1. 从 [Releases](../../releases) 下载 `飞牛音乐歌词＆封面同步-x.y.z.fpk`
 2. 飞牛 NAS → 应用中心 → 手动安装 → 选择该文件
 3. 首次安装会自动安装依赖应用 `nodejs_v22`
 
@@ -51,11 +51,11 @@
 
 应用以独立的包用户身份运行，**没有用户文件权限**。不授权的话只能扫描、写不进去：
 
-> 应用中心 → 飞牛歌词同步 → 设置 → 授权目录 → 添加音乐文件夹
+> 应用中心 → 飞牛音乐歌词＆封面同步 → 设置 → 授权目录 → 添加音乐文件夹
 
 ## 使用
 
-1. 打开「飞牛歌词同步」
+1. 打开「飞牛音乐歌词＆封面同步」
 2. 填音乐目录（也可点「授权目录」自动读取已授权路径）
 3. 点「扫描曲库」
 4. 点「自动补全（缺歌词）」
@@ -113,7 +113,7 @@ npm start          # http://localhost:8791
 打包：
 
 ```bash
-node 工具/mkfpk.mjs 源代码/fpk 安装包/飞牛歌词同步-x.y.z.fpk
+node 工具/mkfpk.mjs 源代码/fpk 安装包/飞牛音乐歌词＆封面同步-x.y.z.fpk
 ```
 
 > **踩坑提醒**：Windows 版 fnpack 打出的 `cmd/*` 权限是 0666，fnOS 会拒绝执行；`.fpk` 还必须是 gzip 压缩。`mkfpk.mjs` 两件事都替你处理了。
